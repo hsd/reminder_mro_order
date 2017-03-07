@@ -5,11 +5,28 @@
     <field name="model">mro.order</field>
     <field name="inherit_id" ref="mro.mro_order_form_view"/>
     <field name="arch" type="xml">
+        <!-- Allow reminders to be set -->
         <xpath expr="//field[@name='date_planned']" position="after">
           <field name="reminder_alarm_ids" widget="many2many_tags"
 		 string="Reminders"/>
         </xpath>
+
+	<!-- Assigned to is now important, as that users agenda will
+	     be filled -->
+	<xpath expr="//field[@name='asset_id']" position="after">
+	  <field name="user_id" attrs="{'readonly': True}"/>
+	</xpath>
     </field>
+</record>
+
+<record model="ir.ui.view" id="mro_order_tree_view_reminders">
+  <field name="model">mro.order</field>
+  <field name="inherit_id" ref="mro.mro_order_tree_view"/>
+  <field name="arch" type="xml">
+    <xpath expr="//field[@name='asset_id']" position="after">
+      <field name="user_id"/>
+    </xpath>
+  </field>
 </record>
 
 </data></openerp>
