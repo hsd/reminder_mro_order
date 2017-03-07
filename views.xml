@@ -1,32 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp><data>
 
-<record model="ir.ui.view" id="mro_order_form_view_reminders">
+  <record model="ir.ui.view" id="mro_order_form_view_reminders">
     <field name="model">mro.order</field>
     <field name="inherit_id" ref="mro.mro_order_form_view"/>
     <field name="arch" type="xml">
-        <!-- Allow reminders to be set -->
-        <xpath expr="//field[@name='date_planned']" position="after">
-          <field name="reminder_alarm_ids" widget="many2many_tags"
-		 string="Reminders"/>
-        </xpath>
+      <!-- Allow reminders to be set -->
+      <xpath expr="//field[@name='date_planned']" position="after">
+        <field name="reminder_alarm_ids" widget="many2many_tags"
+	       string="Reminders"/>
+      </xpath>
 
-	<!-- Assigned to is now important, as that users agenda will
-	     be filled -->
-	<xpath expr="//field[@name='asset_id']" position="after">
-	  <field name="user_id" attrs="{'readonly': True}"/>
-	</xpath>
+      <!-- Assigned to is now important, as that users agenda will
+	   be filled -->
+      <xpath expr="//field[@name='asset_id']" position="after">
+	<field name="user_id" attrs="{'readonly': True}"/>
+      </xpath>
     </field>
-</record>
+  </record>
 
-<record model="ir.ui.view" id="mro_order_tree_view_reminders">
-  <field name="model">mro.order</field>
-  <field name="inherit_id" ref="mro.mro_order_tree_view"/>
-  <field name="arch" type="xml">
-    <xpath expr="//field[@name='asset_id']" position="after">
-      <field name="user_id"/>
-    </xpath>
-  </field>
-</record>
+  <record model="ir.ui.view" id="mro_order_tree_view_reminders">
+    <field name="model">mro.order</field>
+    <field name="inherit_id" ref="mro.mro_order_tree_view"/>
+
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='asset_id']" position="after">
+	<field name="user_id"/>
+      </xpath>
+    </field>
+  </record>
+
+
+
+  <record id="view_mro_order_search" model="ir.ui.view">
+    <field name="name">mro.order.select</field>
+    <field name="model">mro.order</field>
+    <field name="arch" type="xml">
+      <search string="Search Maintenance Orders">
+        <field name="name" string="Reference number"/>
+	<!-- The default filter view -->
+        <filter string="Draft state"
+		name="Draft"
+		domain="[('state','=','draft')]"/>
+
+	<separator />
+	<group expand="0" string="Group By">
+	  <filter string="Assigned to" name="User"
+		  context="{'group_by':'user_id'}"/>
+	</group>
+      </search>
+    </field>
+  </record>
+
+  <!-- Override the mro order action so we can add new stuff -->
+  <record id="mro.action_orders" model="ir.actions.act_window">
+    <field name="name">Maintenance Orders</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">mro.order</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form,calendar</field>
+    <field name="search_view_id" ref="view_mro_order_search"/>
+    <field name="context">{"search_default_Draft":1}</field>
+  </record>
 
 </data></openerp>
