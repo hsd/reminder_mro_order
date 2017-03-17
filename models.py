@@ -1,5 +1,7 @@
 from openerp import models, fields
 
+import logging
+logger = logging.getLogger(__name__)
 
 class mro_order(models.Model):
     _name = 'mro.order'
@@ -16,3 +18,14 @@ class mro_order(models.Model):
         related='asset_id.user_id',
         readonly=True,
         store=True)
+
+    def write(self, cr, uid ,ids, vals, context=None):
+        logger.debug('Write mro_order: making sure date_planned is dirty if no event yet')
+
+        # If there is no event yet, make sure vals contains date_planned
+        for order in self.browse(cr, uid, ids):
+            if not order.reminder_event_id:
+                vals['date_planned'] = order.date_planned
+
+        return super(mro_order, self).write(
+            cr, uid, ids, vals, context=context)
